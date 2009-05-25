@@ -2,10 +2,10 @@ require 'rubygems'
 require 'spork'
 require 'spec'
 require 'spec/mocks'
+load File.dirname(__FILE__) + "/../config/environment.rb"
+
 Spork.prefork do
-  require File.dirname(__FILE__) + "/../config/environment.rb"
 end
 
 Spork.each_run do
-  
 end
