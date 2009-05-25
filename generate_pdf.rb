@@ -26,16 +26,6 @@ class DirectoryPDF
     photo_height = photo_width / photo_aspect_ratio
     padding = 0.mm
 
-    # pdf.stroke_rectangle [0, pdf.bounds.top], pdf.bounds.width, 1
-    
-    # pdf.stroke_rectangle [(pdf.bounds.width - photo_width) / 2, pdf.bounds.top - padding - surname_height], photo_width, photo_height
-    # 
-    # pdf.font FONT, :size => 12, :style => :bold
-    # surname_height = pdf.font.height
-    # pdf.text family.surname, :at => [0, pdf.bounds.top - surname_height]
-    # pdf.font FONT, :size => 8, :style => :normal
-    # pdf.text family.address.street, :at => [pdf.bounds.right - pdf.font.width_of(family.address.street), pdf.bounds.top - surname_height]
-
     pdf.stroke_rectangle [(pdf.bounds.width - photo_width) / 2, pdf.bounds.top], photo_width, photo_height
     pdf.font FONT, :size => 12, :style => :bold
     surname_height = pdf.font.height
