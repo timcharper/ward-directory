@@ -12,4 +12,10 @@ describe Directory::Phone do
   it "should recognize work numbers" do
     Directory::Phone.parse("(111) 111-1111 work").should be_work
   end
+  
+  it "should recognize arbitrary locations" do
+    phone =     Directory::Phone.parse("(111) 111-1111 (alex)")
+    phone.location.should == "alex"
+    phone.to_s.should == "alex: (111) 111-1111"
+  end
 end

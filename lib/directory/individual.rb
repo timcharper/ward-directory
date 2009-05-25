@@ -1,7 +1,8 @@
 class Directory::Individual
-  attr_accessor :name, :is_parent, :gender, :birthday, :age, :email, :phone, :work_phone
+  attr_accessor :name, :is_parent, :gender, :birthday, :age, :email, :phones
   
   def initialize(name, is_parent, gender, birthday, age, contact_info = {})
+    self.phones = []
     self.name, self.is_parent, self.gender, self.birthday, self.age = name, is_parent, gender, birthday, age
   end
   
@@ -19,5 +20,17 @@ class Directory::Individual
   
   def parent?
     @is_parent
+  end
+  
+  def work_phones
+    phones.select { |p| p.work? }.freeze
+  end
+  
+  def phone
+    phones.first
+  end
+  
+  def work_phone
+    work_phones.first
   end
 end

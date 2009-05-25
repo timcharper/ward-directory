@@ -7,10 +7,13 @@ class Directory::Phone
   end
   
   def to_s
-    if location == :home
+    case location
+    when 'home'
       formatted_phone
+    when 'work'
+      "#{location[0..0]}: #{formatted_phone}"
     else
-      "#{location.to_s[0..0]}: #{formatted_phone}"
+      "#{location}: #{formatted_phone}"
     end
   end
   
@@ -19,13 +22,13 @@ class Directory::Phone
   end
   
   def work?
-    @location == :work
+    @location == 'work'
   end
   
   def self.parse(phone_text)
     phone_text.match(/([a-z]+)/i)
-    location = ($1 || "home").strip.to_sym
-    digits = phone_text.gsub(/[^0-9]/, "")
+    location = ($1 || 'home').strip
+    digits = phone_text.gsub(/[^0-9]/, '')
     new(digits, location)
   end
 end

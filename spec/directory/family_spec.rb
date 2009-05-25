@@ -60,5 +60,30 @@ EOF
       @family.parents[0].work_phone.to_s.should == "w: (222) 222-2222"
       @family.children[0].phone.to_s.should == "(333) 333-3333"
     end
+    
+    it "handles missing addresses" do
+      @family = Directory::Family.parse <<-EOF
+Anderson	Kenneth Paul	M	09 Dec	
+      Saratoga Springs, UT  84045      
+EOF
+      @family.surname.should == "Anderson"
+      @family.address.street.should == ""
+      @family.address.city.should == "Saratoga Springs"
+      @family.address.state.should == "UT"
+      @family.address.zip.should == "84045"
+    end
+    
+    it "handles families with more phones than people" do
+      @family = Directory::Family.parse <<-EOF
+Casa	Hombre	M	01 Sep	
+      1234 S. Wildflower Dr.	 	 	 	 
+      Saratoga Springs, UT  84045	 	 	 	 
+      111-111-1111	 	 	 	 
+      222 222-2222 (hombre)	 	 	 	 
+EOF
+      @family.surname.should == "Casa"
+      @family.should have(1).parent
+      @family.parents[0].should have(2).phones
+    end
   end
 end

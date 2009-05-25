@@ -14,9 +14,9 @@ class Directory::Family
   
   def feed_phone(phone)
     if phone.work?
-      everyone.detect {|i| i.work_phone.nil? }.work_phone = phone
+      everyone.detect {|i| i.work_phones.empty? }.phones << phone
     else
-      everyone.detect {|i| i.phone.nil? }.phone = phone
+      (everyone.detect {|i| i.phones.empty? } || everyone.first).phones << phone
     end
   end
   
@@ -30,13 +30,12 @@ class Directory::Family
     people_lines = []
     info_lines = []
     text.split("\n").each do |line|
-      line.match(/^(.+?)\t(.+)$/)
-      info_lines << $1
-      people_lines << $2
+      info_line, people_line = line.split("\t", 2)
+      info_lines << info_line if info_line
+      people_lines << people_line if people_line
     end
     
     family.surname = info_lines[0].strip
-    family.address = Directory::Address.parse(info_lines[1], info_lines[2])
     
     people_lines.each do |line|
       individual = Directory::Individual.parse(line)
@@ -48,21 +47,21 @@ class Directory::Family
       end
     end
     
-    emails = []
-    phones = []
-    info_lines[3..-1].each do |line|
+    address_lines = []
+    info_lines[1..-1].each do |line|
       case line
       when /(.+\@.+?) +(.+[0-9].+)/
         family.feed_email($1.strip)
         family.feed_phone(Directory::Phone.parse($2.strip))
       when /\@/
         family.feed_email(line.strip)
-      else
+      when /[0-9]{3}-[0-9]{4}/
         family.feed_phone(Directory::Phone.parse(line))
+      else
+        address_lines << line
       end
     end
-    
-      
+    family.address = Directory::Address.parse(address_lines)
     family
   end
 end
