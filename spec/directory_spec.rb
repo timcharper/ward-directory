@@ -4,7 +4,7 @@ describe Directory do
   before(:each) do
     @example_listing = <<-EOF    
 Household	Given Name	Sex	Birth Date	Age
-Charleson	Dixie	F	05 Mar	
+Charleson	Dixie T	F	05 Mar	
       16 S. Village Court Road	 	 	 	 
       Saratoga Springs, UT  84045	 	 	 	 
 Chewey	Sue	F	04 Oct	

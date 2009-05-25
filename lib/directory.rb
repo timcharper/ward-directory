@@ -15,9 +15,11 @@ class Directory
       indexed_photos[File.basename(photo_filename).gsub(/.(jpg|jpeg)$/i, '').downcase] = photo_filename
     end
     families.each do |family|
-      key = "#{family.surname}, #{family.parents.first.name}".downcase
-      if indexed_photos[key]
-        family.photo = indexed_photos.delete(key)
+      family_key = "#{family.surname}, #{family.parents.first.name}".downcase
+      indexed_photos.keys.each do |key|
+        if family_key.include?(key)
+          family.photo = indexed_photos.delete(key)
+        end
       end
     end
     indexed_photos.values.sort
