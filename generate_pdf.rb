@@ -4,7 +4,7 @@ require "prawn/measurement_extensions"
 
 filename = ARGV[0]
 directory = Directory.parse(File.read(filename))
-unused = directory.match_photos(Dir[File.join(ARGV[1], "*.{jpg,JPG,jpeg,JPEG}")])
+unused = directory.match_photos(Dir[File.join(ARGV[1], "*")].grep(/(jpg|jpeg)$/i))
 unless unused.empty?
   puts "The following photos weren't used:"
   puts unused * "\n"
@@ -31,12 +31,10 @@ class DirectoryPDF
       pdf.image family.photo, :at => [pdf.bounds.left, pdf.bounds.top], :fit => [pdf.bounds.width, pdf.bounds.height] if family.photo
     end
     
-    
-    
     pdf.font FONT, :size => 12, :style => :bold
     surname_height = pdf.font.height
     pdf.text family.surname, :at => [0, pdf.bounds.top - photo_height - padding - surname_height]
-    pdf.font FONT, :size => 8, :style => :normal
+    pdf.font FONT, :size => 8, :style => :italic
     pdf.text family.address.street, :at => [pdf.bounds.right - pdf.font.width_of(family.address.street), pdf.bounds.top - photo_height - padding - surname_height]
 
     pdf.bounding_box([0, pdf.bounds.top - surname_height  - photo_height - padding], :width => pdf.bounds.width, :height => pdf.bounds.height - photo_height - surname_height) do
