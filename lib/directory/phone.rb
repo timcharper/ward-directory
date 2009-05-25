@@ -18,7 +18,11 @@ class Directory::Phone
   end
   
   def formatted_phone
-    "(#{@digits[0..2]}) #{@digits[3..5]}-#{@digits[6..9]}"
+    if Directory.local_area_code && @digits[0..2] == Directory.local_area_code
+      "#{@digits[3..5]}-#{@digits[6..9]}"
+    else
+      "(#{@digits[0..2]}) #{@digits[3..5]}-#{@digits[6..9]}"
+    end
   end
   
   def work?

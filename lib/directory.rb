@@ -1,5 +1,9 @@
 class Directory
   attr_reader :families
+
+  class << self
+    attr_accessor :local_area_code
+  end
   
   def initialize(families = [])
     @families = families

@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
 describe Directory::Phone do
+  before(:each) do
+    Directory.local_area_code = nil
+  end
+  
   it "should render as a string" do
     Directory::Phone.parse("(111) 111-1111").to_s.should == "(111) 111-1111"
   end
@@ -17,5 +21,11 @@ describe Directory::Phone do
     phone =     Directory::Phone.parse("(111) 111-1111 (alex)")
     phone.location.should == "alex"
     phone.to_s.should == "alex: (111) 111-1111"
+  end
+  
+  it "should render with respect to an area code" do
+    Directory.local_area_code = "111"
+    Directory::Phone.parse("(111) 111-1111").to_s.should == "111-1111"
+    Directory::Phone.parse("(222) 222-2222").to_s.should == "(222) 222-2222"
   end
 end
