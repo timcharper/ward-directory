@@ -4,7 +4,7 @@ require "prawn/measurement_extensions"
 
 filename = ARGV[0]
 directory = Directory.parse(File.read(filename))
-
+Directory.local_area_code = "801"
 
 class DirectoryPDF
   FONT = "Times-Roman"
@@ -20,6 +20,16 @@ class DirectoryPDF
     photo_width = pdf.bounds.width * 0.80
     photo_height = photo_width / photo_aspect_ratio
     padding = 0.mm
+
+    # pdf.stroke_rectangle [0, pdf.bounds.top], pdf.bounds.width, 1
+    
+    # pdf.stroke_rectangle [(pdf.bounds.width - photo_width) / 2, pdf.bounds.top - padding - surname_height], photo_width, photo_height
+    # 
+    # pdf.font FONT, :size => 12, :style => :bold
+    # surname_height = pdf.font.height
+    # pdf.text family.surname, :at => [0, pdf.bounds.top - surname_height]
+    # pdf.font FONT, :size => 8, :style => :normal
+    # pdf.text family.address.street, :at => [pdf.bounds.right - pdf.font.width_of(family.address.street), pdf.bounds.top - surname_height]
 
     pdf.stroke_rectangle [(pdf.bounds.width - photo_width) / 2, pdf.bounds.top], photo_width, photo_height
     pdf.font FONT, :size => 12, :style => :bold
@@ -39,7 +49,7 @@ class DirectoryPDF
         pdf.text parent.name, :at => [parent_indent, parent_y]
         if not parent.phones.empty?
           pdf.font FONT, :style => :normal, :size => 7
-          pdf.text " - #{parent.phones.map(&:to_s)}", :at => [name_width + parent_indent, parent_y]
+          pdf.text " - #{parent.phones.map(&:to_s) * ', '}", :at => [name_width + parent_indent, parent_y]
         end
         if parent.email
           pdf.font FONT, :style => :normal, :size => 7
@@ -50,7 +60,9 @@ class DirectoryPDF
         end
       end
       pdf.font FONT, :style => :normal, :size => 7
-      pdf.text family.children.map(&:name) * ", ", :at => [parent_indent, pdf.bounds.top - y_offset - pdf.font.height]
+      pdf.bounding_box([parent_indent, pdf.bounds.top - y_offset - 1.mm], :width => pdf.bounds.width) do
+        pdf.text family.children.map(&:name) * ", "
+      end
     end
   end
   
@@ -83,14 +95,14 @@ class DirectoryPDF
         pdf.start_new_page unless page_number == 1
         page_header(pdf, page_number)
   
-        pdf.bounding_box([pdf.bounds.left, pdf.bounds.top - @header_height - 5.mm], :width => pdf.bounds.width, :height => pdf.bounds.height - @header_height) do
+        pdf.bounding_box([pdf.bounds.left, pdf.bounds.top - @header_height], :width => pdf.bounds.width, :height => pdf.bounds.height - @header_height) do
           row_height = pdf.bounds.height / 3
           col_width = pdf.bounds.width / 3
           col_margin = 10.mm
           page_families[0..8].in_groups_of(3).each_with_index do |row_families, row|
             row_families.each_with_index do |family, col|
               next unless family
-              pdf.bounding_box([pdf.bounds.left + (col_width * col) + (col_margin / 2), pdf.bounds.top - (row_height * row) + 4.mm], :width => col_width - col_margin, :height => row_height) do
+              pdf.bounding_box([pdf.bounds.left + (col_width * col) + (col_margin / 2), pdf.bounds.top - (row_height * row)], :width => col_width - col_margin, :height => row_height) do
                 draw_family(pdf, family)
               end
             end
