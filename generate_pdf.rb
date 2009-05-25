@@ -4,7 +4,7 @@ require "prawn/measurement_extensions"
 
 filename = ARGV[0]
 directory = Directory.parse(File.read(filename))
-unused = directory.match_photos(Dir[File.join(ARGV[1], "*.jpg")])
+unused = directory.match_photos(Dir[File.join(ARGV[1], "*.{jpg,JPG,jpeg,JPEG}")])
 unless unused.empty?
   puts "The following photos weren't used:"
   puts unused * "\n"
