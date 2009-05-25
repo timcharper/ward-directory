@@ -4,6 +4,11 @@ require "prawn/measurement_extensions"
 
 filename = ARGV[0]
 directory = Directory.parse(File.read(filename))
+unused = directory.match_photos(Dir[File.join(ARGV[1], "*.jpg")])
+unless unused.empty?
+  puts "The following photos weren't used:"
+  puts unused * "\n"
+end
 Directory.local_area_code = "801"
 
 class DirectoryPDF

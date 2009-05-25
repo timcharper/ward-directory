@@ -1,5 +1,5 @@
 class Directory::Family
-  attr_accessor :parents, :children, :surname, :address
+  attr_accessor :parents, :children, :surname, :address, :photo
   def initialize(options = {})
     options.each do |k, v|
       send("#{k}=", v)
