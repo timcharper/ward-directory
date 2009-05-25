@@ -25,8 +25,14 @@ class DirectoryPDF
     photo_width = pdf.bounds.width * 0.80
     photo_height = photo_width / photo_aspect_ratio
     padding = 0.mm
-
-    pdf.stroke_rectangle [(pdf.bounds.width - photo_width) / 2, pdf.bounds.top], photo_width, photo_height
+    
+    pdf.bounding_box([(pdf.bounds.width - photo_width) / 2, pdf.bounds.top], :width => photo_width, :height => photo_height) do
+      pdf.stroke_bounds
+      pdf.image family.photo, :at => [pdf.bounds.left, pdf.bounds.top], :fit => [pdf.bounds.width, pdf.bounds.height] if family.photo
+    end
+    
+    
+    
     pdf.font FONT, :size => 12, :style => :bold
     surname_height = pdf.font.height
     pdf.text family.surname, :at => [0, pdf.bounds.top - photo_height - padding - surname_height]
