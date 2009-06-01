@@ -1,7 +1,7 @@
 class Directory::Individual
   attr_accessor :name, :is_parent, :gender, :birthday, :age, :email, :phones
   
-  def initialize(name, is_parent, gender, birthday, age, contact_info = {})
+  def initialize(name, is_parent = true, gender = nil, birthday = nil, age = nil, contact_info = {})
     self.phones = []
     self.name, self.is_parent, self.gender, self.birthday, self.age = name, is_parent, gender, birthday, age
   end

@@ -48,11 +48,8 @@ class Directory::Family
     end
     
     address_lines = []
-    info_lines[1..-1].each do |line|
+    Directory::Family.digest_info_items(info_lines[1..-1]).each do |line|
       case line
-      when /(.+\@.+?) +(.+[0-9].+)/
-        family.feed_email($1.strip)
-        family.feed_phone(Directory::Phone.parse($2.strip))
       when /\@/
         family.feed_email(line.strip)
       when /[0-9]{3}-[0-9]{4}/
@@ -63,5 +60,27 @@ class Directory::Family
     end
     family.address = Directory::Address.parse(address_lines)
     family
+  end
+  
+  def self.digest_info_items(items)
+    results = []
+    items.each do |item|
+      until item.strip.blank?
+        item = item.gsub(/^[, \t]+/, "")
+        case item
+        when /^([\w.]+@[\w.]+)/
+          results << $1
+          item = item.gsub($1, "")
+        when /^(((\(\d{3}\) *)|(\d{3}-)|)\d{3}-\d{4}( *\({0,1}[a-z]+\){0,1}){0,1})/
+          results << $1
+          item = item.gsub($1, "")
+        else
+          results << item
+          item = ""
+        end
+      end
+    end
+    
+    results
   end
 end

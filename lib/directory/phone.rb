@@ -7,11 +7,8 @@ class Directory::Phone
   end
   
   def to_s
-    case location
-    when 'home'
+    if location == 'home'
       formatted_phone
-    when 'work'
-      "#{location[0..0]}: #{formatted_phone}"
     else
       "#{location}: #{formatted_phone}"
     end

@@ -57,7 +57,7 @@ Tanner	Dan	M	12 Jan
       (333) 333-3333	 	 	 	 
 EOF
       @family.parents[0].phone.to_s.should == "(111) 111-1111"
-      @family.parents[0].work_phone.to_s.should == "w: (222) 222-2222"
+      @family.parents[0].work_phone.to_s.should == "work: (222) 222-2222"
       @family.children[0].phone.to_s.should == "(333) 333-3333"
     end
     
@@ -84,6 +84,32 @@ EOF
       @family.surname.should == "Casa"
       @family.should have(1).parent
       @family.parents[0].should have(2).phones
+    end
+  end
+  
+  describe ".digest_info_items" do
+    def parse_items(items)
+      Directory::Family.digest_info_items(items)
+    end
+    
+    it "should recognize two emails on a line" do
+      parse_items(["e1@email.com, e2@email.com"]).should == ['e1@email.com', 'e2@email.com']
+      parse_items(["e1@email.com  e2@email.com"]).should == ['e1@email.com', 'e2@email.com']
+      parse_items(["  e1@email.com    e2@email.com"]).should == ['e1@email.com', 'e2@email.com']
+    end
+    
+    it "should recognize a phone number with a location suffix and an email" do
+      parse_items(["(111) 111-1111 (work)  e1@email.com"]).should == ['(111) 111-1111 (work)', 'e1@email.com']
+      parse_items(["111-111-1111 (work)  e1@email.com"]).should == ['111-111-1111 (work)', 'e1@email.com']
+      parse_items(["111-1111 (work)  e1@email.com"]).should == ['111-1111 (work)', 'e1@email.com']
+      
+      parse_items(["e1@email.com  (111) 111-1111 (work)"]).should == ['e1@email.com', '(111) 111-1111 (work)']
+      parse_items(["e1@email.com  111-111-1111 (work)"]).should == ['e1@email.com', '111-111-1111 (work)']
+      parse_items(["e1@email.com  111-1111 (work)"]).should == ['e1@email.com', '111-1111 (work)']
+    end
+    
+    it "should recognize 2 phone numbers on the same line" do
+      parse_items(["(111) 111-1111 (home) (222) 222-2222 (work)"]).should == ["(111) 111-1111 (home)", "(222) 222-2222 (work)"]
     end
   end
 end

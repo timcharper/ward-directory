@@ -1,7 +1,7 @@
 require 'config/environment.rb'
 require 'prawn'
 require "prawn/measurement_extensions"
-
+require 'rmagick'
 filename = ARGV[0]
 directory = Directory.parse(File.read(filename))
 unused = directory.match_photos(Dir[File.join(ARGV[1], "*")].grep(/(jpg|jpeg)$/i))
@@ -20,6 +20,14 @@ class DirectoryPDF
     @families = families
   end
   
+  def down_sampled_photo(filename, width, height, dpi = 150)
+    # width and height are in 72 format.  convert to desired dpi
+    width = (width / 72) * dpi
+    height = (height / 72) * dpi
+    image = Magick::Image.read(filename).first
+    StringIO.new(image.resize(width, height).to_blob)
+  end
+  
   def draw_family(pdf, family)
     photo_aspect_ratio = 1.5
     photo_width = pdf.bounds.width * 0.80
@@ -28,7 +36,7 @@ class DirectoryPDF
     
     pdf.bounding_box([(pdf.bounds.width - photo_width) / 2, pdf.bounds.top], :width => photo_width, :height => photo_height) do
       pdf.stroke_bounds
-      pdf.image family.photo, :at => [pdf.bounds.left, pdf.bounds.top], :fit => [pdf.bounds.width, pdf.bounds.height] if family.photo
+      pdf.image down_sampled_photo(family.photo, photo_width, photo_height), :at => [pdf.bounds.left, pdf.bounds.top], :fit => [pdf.bounds.width, pdf.bounds.height] if family.photo
     end
     
     pdf.font FONT, :size => 12, :style => :bold
@@ -67,13 +75,14 @@ class DirectoryPDF
   
   def page_header(pdf, page_number)
     pdf.font FONT, :size => 10
+    total_pages = (@families.length / 9) + 1
     
     @header_height = pdf.font.height + 1.mm
     pdf.bounding_box([pdf.bounds.left, pdf.bounds.top], :width => pdf.bounds.width, :height => @header_height) do
-      pdf.text "Ward Directory", :align => :left
+      pdf.text "Ward Directory - Church Use Only!", :align => :left
     end
     pdf.bounding_box([pdf.bounds.left, pdf.bounds.top], :width => pdf.bounds.width, :height => @header_height) do
-      pdf.text "page #{page_number}", :align => :center
+      pdf.text "page #{page_number} / #{total_pages}", :align => :center
     end
     pdf.bounding_box([pdf.bounds.left, pdf.bounds.top], :width => pdf.bounds.width, :height => @header_height) do
       pdf.text Date.today.to_s, :align => :right
@@ -103,6 +112,8 @@ class DirectoryPDF
               next unless family
               pdf.bounding_box([pdf.bounds.left + (col_width * col) + (col_margin / 2), pdf.bounds.top - (row_height * row)], :width => col_width - col_margin, :height => row_height) do
                 draw_family(pdf, family)
+                STDOUT << "."
+                STDOUT.flush
               end
             end
           end
@@ -110,6 +121,7 @@ class DirectoryPDF
         page_number += 1
       end
     end
+    puts
   end
 end
 
