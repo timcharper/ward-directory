@@ -27,4 +27,13 @@ EOF
     directory.families[0].photo.should == "/photos/Charleson, Dixie.jpg"
     directory.families[1].photo.should == "/photos/Chewey, Sue.jpg"
   end
+  
+  it "matches a list of photos from in a folder to families" do
+    directory = Directory.parse(@example_listing)
+    Dir.should_receive(:[]).with('/folder/*').and_return(["/photos/Charleson, Dixie.jpg", "/photos/Chewey, Sue.Jpg", "/photos/Guy, Some.JPEG"])
+    unused_photos = directory.match_photos('/folder')
+    unused_photos.should == ["/photos/Guy, Some.JPEG"]
+    directory.families[0].photo.should == "/photos/Charleson, Dixie.jpg"
+    directory.families[1].photo.should == "/photos/Chewey, Sue.Jpg"
+  end
 end

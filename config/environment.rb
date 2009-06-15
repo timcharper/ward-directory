@@ -4,6 +4,10 @@ require 'spork'
 Spork.prefork do
   require 'pp'
   require 'activesupport'
+  require 'mechanize'
+  require 'hpricot'
+  require 'yaml'
+  require 'rmagick'
 
   ROOT_PATH = File.expand_path('../', File.dirname(__FILE__))
   ActiveSupport::Dependencies.hook!

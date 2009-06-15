@@ -1,10 +1,9 @@
 require 'config/environment.rb'
 require 'prawn'
 require "prawn/measurement_extensions"
-require 'rmagick'
 filename = ARGV[0]
-directory = Directory.parse(File.read(filename))
-unused = directory.match_photos(Dir[File.join(ARGV[1], "*")].grep(/(jpg|jpeg)$/i))
+photo_directory = Directory.parse(File.read(filename))
+unused = photo_directory.match_photos(Dir[File.join(ARGV[1], "*")].grep(/(jpg|jpeg)$/i))
 unless unused.empty?
   puts "The following photos weren't used:"
   puts unused * "\n"

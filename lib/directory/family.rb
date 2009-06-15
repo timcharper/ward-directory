@@ -83,4 +83,8 @@ class Directory::Family
     
     results
   end
+  
+  def identifier
+    "#{surname}, #{parents.first.name}".downcase
+  end
 end

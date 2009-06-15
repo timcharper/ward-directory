@@ -1,8 +1,4 @@
-require 'mechanize'
-require 'hpricot'
-require 'yaml'
-config = YAML.load_file(File.dirname(__FILE__) + '/../' + "config/ward_website.yml")
-class WebDirectory
+class WebDirectory < Directory
   MEMBERS_TABLE_XPATH = '//html/body/table[2]/tr/td[2]/table/tr[2]/td[2]/p/table/tr/td/table[3]'
   def initialize(config = {})
     @config = config
@@ -15,19 +11,29 @@ class WebDirectory
   def homepage
     @homepage ||= (
       page = agent.get("https://secure.lds.org/units/")
-      f = page.forms.first
-      f[username] = @config['username']
-      f["password"] = @config['password']
-      @home_page = f.submit
+      f = page.form_with(:name => "loginForm")
+      f['username'] = @config['username']
+      f['password'] = @config['password'] || (
+        puts "Please enter your password:"
+        STDOUT.flush
+        gets.chomp
+      )
+      homepage = f.submit
+      raise RuntimeError, "failed to authenticate" if homepage.form_with(:name => "loginForm")
+      homepage
     )
   end
   
   def admin_page
-    @admin_page ||= agent.get(home_page.link_with(:text => /Administrator Options/).href.scan(/^.+'(.+)'.*$/).flatten.first)
+    @admin_page ||= (
+      admin_link = homepage.link_with(:text => /Administrator Options/)
+      raise RuntimeError, "not authenticated as an adminstrator (can't find the 'Administrator Options' link)" unless admin_link 
+      agent.get(admin_link.href.scan(/^.+'(.+)'.*$/).flatten.first)
+    )
   end
   
-  def membership_directory_page
-    @membership_directory_page ||= admin_page.link_with(:text => /Membership Directory/).click
+  def first_membership_directory_page
+    @first_membership_directory_page ||= admin_page.link_with(:text => /Membership Directory/).click
   end
   
   def families_on_page(page)
@@ -41,11 +47,29 @@ class WebDirectory
       WebDirectory::Family.new(agent, change_link, :surname => surname, :parents => [Directory::Individual.new(head_household_name)])
     end
   end
-end
-
-class WebDirectory::Family < ::Directory::Family
-  def initialize(agent, change_link, options = {})
-    @agent, @change_link = agent, change_link
-    super(options)
+  
+  def families
+    @families ||= (
+      result = []
+      membership_directory_pages.each do |page|
+        result.concat families_on_page(page)
+      end
+      result
+    )
+  end
+  
+  def membership_directory_pages
+    puts "fetching A"
+    pages = [first_membership_directory_page]
+    ('B'..'Z').each do |letter|
+      puts "fetching #{letter}"
+      pages << first_membership_directory_page.link_with(:text => letter).click
+    end
+    pages
+  end
+  
+  def self.parse
+    # unimplementing a method - code smell - base class needs to be subclassed
+    raise NotImplemented
   end
 end
