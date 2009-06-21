@@ -10,7 +10,7 @@ describe Directory::Phone do
   end
   
   it "should render work phone numbers with a w: prefix" do
-    Directory::Phone.parse("(111) 111-1111 work").to_s.should == "w: (111) 111-1111"
+    Directory::Phone.parse("(111) 111-1111 work").to_s.should == "work: (111) 111-1111"
   end
   
   it "should recognize work numbers" do
