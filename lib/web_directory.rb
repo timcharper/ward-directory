@@ -1,4 +1,5 @@
 class WebDirectory < Directory
+  autoload :Family, 'web_directory/family'
   MEMBERS_TABLE_XPATH = '//html/body/table[2]/tr/td[2]/table/tr[2]/td[2]/p/table/tr/td/table[3]'
   def initialize(config = {})
     @config = config
