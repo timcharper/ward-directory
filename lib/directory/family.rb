@@ -25,6 +25,7 @@ class Directory::Family
   end
   
   def self.parse(text)
+    return nil if /^.+, see/ =~ text
     family = new
     
     people_lines = []

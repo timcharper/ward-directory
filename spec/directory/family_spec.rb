@@ -30,6 +30,10 @@ EOF
       @family.parents[1].phone.to_s.should == "(222) 222-2222"
     end
     
+    it "returns nil 'see such and such' lines" do
+      Directory::Family.parse("Person, Awesome, see Chewey, Sue\n").should be_nil
+    end
+
     it "properly handles families with one parent" do
       @family = Directory::Family.parse <<-EOF
 Tanner	Dan	M	12 Jan	
