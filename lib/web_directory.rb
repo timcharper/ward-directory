@@ -17,7 +17,7 @@ class WebDirectory < Directory
       f['password'] = @config['password'] || (
         puts "Please enter your password:"
         STDOUT.flush
-        gets.chomp
+        STDIN.gets.chomp
       )
       homepage = f.submit
       raise RuntimeError, "failed to authenticate" if homepage.form_with(:name => "loginForm")
