@@ -22,4 +22,8 @@ class Directory::Address
       new(street.to_s.strip)
     end
   end
+
+  def to_s
+    street
+  end
 end

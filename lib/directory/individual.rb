@@ -33,4 +33,13 @@ class Directory::Individual
   def work_phone
     work_phones.first
   end
+
+  def to_s
+    output = [name, gender]
+    output << email if email
+    phones.each do |phone|
+      output << phone
+    end
+    output * " "
+  end
 end

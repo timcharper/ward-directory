@@ -87,4 +87,13 @@ class Directory::Family
   def identifier
     "#{surname}, #{parents.first.name}".downcase
   end
+
+  def to_s
+    output = "#{surname}  #{address}\n"
+    parents.each do |parent|
+      output << "  " + parent.to_s + "\n"
+    end
+    output << ("    " + children.map { |c| c.name }.join(' '))
+    output
+  end
 end
