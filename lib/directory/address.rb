@@ -19,7 +19,7 @@ class Directory::Address
     when /(.+)  ([0-9-]+)/
       new(street.strip, $1.strip, "", $2.strip)
     else
-      new(street.strip)
+      new(street.to_s.strip)
     end
   end
 end

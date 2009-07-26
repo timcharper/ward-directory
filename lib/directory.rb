@@ -44,6 +44,6 @@ class Directory
         piece << line
       end
     end
-    Directory.new(pieces.map { |p| Family.parse(p) })
+    Directory.new(pieces.map { |p| Family.parse(p) }.compact)
   end
 end
