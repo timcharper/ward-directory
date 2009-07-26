@@ -1,3 +1,8 @@
+unless ARGV.length == 1
+  puts "Usage: #{$0} [/path/to/photos]"
+  exit! 1
+end
+
 require 'config/environment.rb'
 config = YAML.load_file(File.dirname(__FILE__) + '/config/ward_website.yml')
 

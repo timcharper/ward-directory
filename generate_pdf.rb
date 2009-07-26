@@ -1,9 +1,15 @@
+if ARGV.length != 2
+  puts "Usage: #{$0} [directory.csv] [/path/to/photos]"
+  exit! 1
+end
+
 require 'config/environment.rb'
 require 'prawn'
 require "prawn/measurement_extensions"
+
 filename = ARGV[0]
-photo_directory = Directory.parse(File.read(filename))
-unused = photo_directory.match_photos(Dir[File.join(ARGV[1], "*")].grep(/(jpg|jpeg)$/i))
+directory = Directory.parse(File.read(filename))
+unused = directory.match_photos(Dir[File.join(ARGV[1], "*")].grep(/(jpg|jpeg)$/i))
 unless unused.empty?
   puts "The following photos weren't used:"
   puts unused * "\n"
