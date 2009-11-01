@@ -48,7 +48,7 @@ class DirectoryPDF
     surname_height = pdf.font.height
     pdf.text family.surname, :at => [0, pdf.bounds.top - photo_height - padding - surname_height]
     pdf.font FONT, :size => 8, :style => :italic
-    pdf.text family.address.street, :at => [pdf.bounds.right - pdf.font.width_of(family.address.street), pdf.bounds.top - photo_height - padding - surname_height]
+    pdf.text family.address.street, :at => [pdf.bounds.right - pdf.width_of(family.address.street), pdf.bounds.top - photo_height - padding - surname_height]
 
     pdf.bounding_box([0, pdf.bounds.top - surname_height  - photo_height - padding], :width => pdf.bounds.width, :height => pdf.bounds.height - photo_height - surname_height) do
       y_offset = 0
@@ -57,7 +57,7 @@ class DirectoryPDF
         pdf.font FONT, :style => :bold, :size => 8
         parent_y = pdf.bounds.top - y_offset - pdf.font.height
         y_offset += pdf.font.height
-        name_width = pdf.font.width_of(parent.name)
+        name_width = pdf.width_of(parent.name)
         pdf.text parent.name, :at => [parent_indent, parent_y]
         if not parent.phones.empty?
           pdf.font FONT, :style => :normal, :size => 7
@@ -67,7 +67,7 @@ class DirectoryPDF
           pdf.font FONT, :style => :normal, :size => 7
           pdf.fill_color EMAIL_COLOR
           
-          pdf.text parent.email, :at => [pdf.bounds.width - pdf.font.width_of(parent.email), parent_y]
+          pdf.text parent.email, :at => [pdf.bounds.width - pdf.width_of(parent.email), parent_y]
           pdf.fill_color TEXT_COLOR
         end
       end
